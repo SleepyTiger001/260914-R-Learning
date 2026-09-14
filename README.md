@@ -47,6 +47,9 @@ Rscript 01_R_base_tidyverse_basics.R
 
 ## 四、脚本产出的文件
 
+> 以下文件由脚本运行时生成，**默认不纳入版本控制**（见 `.gitignore`），克隆仓库后跑一遍脚本即全部重建。
+> 如需把运行结果一并发布，删掉 `.gitignore` 中 `data/` 与 `outputs/` 两行即可。
+
 ```
 data/                            # 读写演示的中间文件
   iris_base.csv                  # Base write.csv 产出（已去掉行名）
