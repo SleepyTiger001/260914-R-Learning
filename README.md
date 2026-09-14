@@ -4,18 +4,32 @@
 
 ## 一、怎么用
 
-1. 用 RStudio 打开 `01_R_base_tidyverse_basics.R`。
-2. 把光标停在某一行，按 `Cmd + Enter` 执行该行；选中若干行可一次执行所选代码。
+1. 用 RStudio 打开项目文件 `260914-R-Learning.Rproj`，工作目录会自动锁定在项目根目录。
+2. 打开 `scripts/01_R_base_tidyverse_basics.R`，把光标停在某一行按 `Cmd + Enter` 执行该行；选中若干行可一次执行所选代码。
 3. 从上往下顺序执行即可，不要跳段（后文会用到前文的对象）。
 
 命令行整体跑一遍（用于验证环境，约 4 秒）：
 
 ```bash
 cd "/Users/cuinuan/Documents/ProgramFiles/R-Source/Programs/R-Learning-Proj/260914-桃园三结义R语言基础训练"
-Rscript 01_R_base_tidyverse_basics.R
+Rscript scripts/01_R_base_tidyverse_basics.R
 ```
 
-## 二、运行环境
+## 二、目录结构
+
+```
+260914-R-Learning.Rproj          # RStudio 项目文件：双击打开，工作目录即项目根目录
+scripts/NN_主题.R                # 所有课程脚本，按序号命名（后续新课依次追加）
+README.md                        # 课程说明与踩坑记录
+.gitignore                       # 版本控制排除规则
+data/                            # 随仓库分发（脚本运行时会覆盖重写）
+outputs/01_tables/               # 运行后生成，默认不入库
+outputs/02_figures/              # 运行后生成，默认不入库
+```
+
+脚本内一律使用**相对路径**（`data/...`、`outputs/...`），因此工作目录必须是项目根目录 —— 用 `.Rproj` 打开即可满足，别单独打开 `scripts/` 下的文件。
+
+## 三、运行环境
 
 | 项目 | 版本 / 说明 |
 | --- | --- |
@@ -26,7 +40,7 @@ Rscript 01_R_base_tidyverse_basics.R
 
 脚本首节已给出安装命令（注释状态），本机无需执行。
 
-## 三、课程结构（13 节，建议时间分配）
+## 四、课程结构（13 节，建议时间分配）
 
 | 节 | 内容 | 建议用时 |
 | --- | --- | --- |
@@ -45,10 +59,13 @@ Rscript 01_R_base_tidyverse_basics.R
 | 12 | 综合案例：一条完整分析流水线 | 8 分钟 |
 | 13 | 课堂练习 8 题（含参考答案） | 课后 |
 
-## 四、数据与产出文件
+## 五、数据与产出文件
 
 `data/` 随仓库提交，克隆后即可直接使用（脚本运行时会被覆盖重写，属正常现象）。
 `outputs/` 默认不入库，跑一遍脚本即全部重建；如需把运行结果也发布，删掉 `.gitignore` 中 `outputs/` 一行即可。
+
+> 每次运行脚本都会重写 `data/` 下的文件；其中 `iris.xlsx`、`iris.rds` 是二进制格式，即使内容相同字节也可能变化。
+> 跑完脚本想保持仓库干净，执行 `git checkout -- data/` 把工作区恢复成已提交的版本即可。
 
 ```
 data/                            # 随仓库分发
@@ -65,7 +82,7 @@ outputs/02_figures/
   dose_vs_papers.png             # 用量 × 文献数散点图
 ```
 
-## 五、示例数据说明
+## 六、示例数据说明
 
 脚本用 `herbs` 数据集承载所有 dplyr 演示，字段设计与中医数据挖掘场景对齐：
 
@@ -81,7 +98,7 @@ outputs/02_figures/
 
 用量与文献数为课堂演示用示意值，**不对应真实药典或文献统计口径**，请勿直接引用。
 
-## 六、运行中会看到的提示（都是有意设计的）
+## 七、运行中会看到的提示（都是有意设计的）
 
 | 提示 | 出处 | 说明 |
 | --- | --- | --- |
@@ -91,7 +108,7 @@ outputs/02_figures/
 | `Column specification` 列类型推断 | 07 节 `read_csv()` | readr 的正常提示，建议读一眼 |
 | `fct_reorder() removing N missing values` | 10 节 | 排序变量含 NA 时的提示 |
 
-## 七、已验证的踩坑点（脚本中已规避，可当教学素材）
+## 八、已验证的踩坑点（脚本中已规避，可当教学素材）
 
 1. **列名与函数撞名**：把列命名为 `order` 会让 `fct_reorder()` 内部调用错位而报错，改用 `qi_order`。
 2. **`fct_reorder()` + NA**：排序变量含 NA 时水平数与索引长度不一致，直接报 `` `idx` must contain one integer for each level of `f` ``；需先 `drop_na()` 或填默认值。
@@ -99,7 +116,7 @@ outputs/02_figures/
 4. **空分隔符拆分**：`separate_longer_delim(delim = "")` 与 `separate_wider_delim(delim = "")` 均不接受空字符串；无分隔符的字符串要先 `str_split()` + `unnest_longer()`。
 5. **中文图形**：命令行 Rscript 默认图形设备是 pdf，不支持中文，会报「字体类别出错」；因此屏幕显示用 `if (interactive()) print(p)`，出图一律用 `ggsave()` 落 PNG，并在主题里指定 `family = "PingFang SC"`。
 
-## 八、课后延伸建议
+## 九、课后延伸建议
 
 - 数据清洗实战：缺失值 / 异常值 / 类型纠错 / 重复记录去重；
 - ggplot2 图形语法：分面、坐标轴刻度、配色与图表导出参数；

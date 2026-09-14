@@ -2,7 +2,8 @@
 #  R Base + tidyverse 基础语法通识课（单文件 · 逐行执行版）
 # -----------------------------------------------------------------------------
 #  环境：R 4.5.2 / tidyverse 2.x / rio     编写：2026-09-14
-#  用法：用 RStudio 打开本文件，光标停在某一行按 Cmd + Enter 执行该行；
+#  用法：用 RStudio 打开项目文件 260914-R-Learning.Rproj，再打开本文件；
+#        光标停在某一行按 Cmd + Enter 执行该行（本文件位于 scripts/ 目录）；
 #        或选中若干行后 Cmd + Enter 执行所选代码。自上而下顺序执行。
 #  约定：代码右侧或上方的 # 注释即为该行的讲解；所有行可以独立执行。
 #  目录：00 环境  01 对象与类型  02 向量与索引  03 四种容器  04 Base 数据框
@@ -246,7 +247,7 @@ c(4, 9, 16) %>% mean() %>% sqrt()    # magrittr 的 %>%：旧写法，由 librar
 # ---- 07 数据的读写：Base / readr / rio ----------------------------------------
 
 fs::dir_create(c("data", "outputs/01_tables", "outputs/02_figures"))   # fs 建目录；已存在则跳过，不会报错
-getwd()                              # 确认当前工作目录；若不是项目根目录，用 setwd("项目绝对路径") 切换
+getwd()                              # 确认工作目录必须停在项目根目录（用 .Rproj 打开即自动满足）；不对就 setwd("项目绝对路径")
 
 write.csv(iris, "data/iris_base.csv", row.names = FALSE)   # Base R 写 CSV；row.names = FALSE 去掉行号列（否则读回来多一列 X）
 read.csv("data/iris_base.csv") |> head(3)   # Base R 读 CSV；R 4.x 默认 stringsAsFactors = FALSE，不再乱转因子

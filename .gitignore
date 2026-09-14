@@ -9,8 +9,8 @@
 .RData                 # 工作空间镜像，换台机器就不可复现
 .Ruserdata
 Rplots.pdf             # 命令行画图的默认输出，每次运行都重新生成
-*.Rproj
-.Rproj.user/
+# 注意：*.Rproj 是 RStudio 项目文件，它决定工作目录，必须随仓库提交，故不忽略
+.Rproj.user/           # RStudio 个人会话状态（窗口布局、命令历史），属本机配置
 .Renviron              # 本地环境变量，可能含令牌/密钥
 .Rprofile              # 个人启动脚本，属本机配置
 *.RData
