@@ -2,8 +2,8 @@
 #  作业 01：字符串日期 → 日期型 → 计算两个日期的间隔
 # -----------------------------------------------------------------------------
 #  对应课程：scripts/01_base_tidyverse/01_R_base_tidyverse_basics.R
-#  提交方式：
-#    1) 把答案保存为 solutions/<你的名字>/S_01_260914.R；
+#  提交方式：完整步骤见 homework/HOWTO_SUBMIT.md
+#    1) 把答案保存为 homework/solutions/<你的名字>/S_01_260914.R；
 #    2) 文件中不要留存个人隐私信息；
 #    3) 通过 Fork + Pull Request 提交：先 Fork 本仓库，把答案推送到你 fork 的仓库，
 #       再向 https://github.com/shujuecn/260914-R-Learning.git 发起 Pull Request。

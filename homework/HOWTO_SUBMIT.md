@@ -93,42 +93,6 @@ gh pr create \
 
 ---
 
-## 常见问题
-
-| 现象 | 原因与处理 |
-| --- | --- |
-| 能不能直接 clone 老师仓库再关联 Fork？ | 技术上可行，但**不推荐**。直接 clone 老师仓库时 `origin` 指向老师仓库，你没有写权限；新分支第一次不带远端名推送会被 git 提示 `git push --set-upstream origin <分支>`，照着做就会推到老师仓库并被拒。见下方说明 |
-| PR 里出现无关改动 | 分支不是从最新 `main` 切出；先 `git fetch upstream && git merge upstream/main` 再改 |
-| 忘记关联 upstream | 重新执行第 3 步的 `git remote add upstream ...` |
-| 推送被拒（protected branch） | 不要往 `upstream/main` 推；推到自己 Fork 的分支，再发 PR |
-| 本地文件不在 `solutions/<名字>/` | 学生答案必须放在该目录下，文件名 `S_NN_260914.R`，否则不会被批改 |
-
-### 为什么先 clone 自己的 Fork
-
-Pull Request 的 head 必须是**你自己有写权限**的仓库分支，所以答案一定要推送到 Fork，两种做法都合法：
-
-| 做法 | 远端设置 | 推送命令 | 风险 |
-| --- | --- | --- | --- |
-| A（推荐）先 clone Fork | `origin` = 你的 Fork，`upstream` = 老师仓库 | `git push -u origin <分支>` | 默认推送目标就是自己的仓库，不易推错 |
-| B 先 clone 老师仓库 | `origin` = 老师仓库，另加 `fork` = 你的 Fork | `git push fork <分支>`（必须显式指定） | 漏写远端名时 git 会提示推到 `origin`，照做即被拒 |
-
-做法 B 的完整命令：
-
-```bash
-git clone https://github.com/shujuecn/260914-R-Learning.git
-cd 260914-R-Learning
-git remote add fork https://github.com/<你的用户名>/260914-R-Learning.git
-git checkout -b hwNN-<你的名字>
-# 写答案……
-git add homework/solutions/<你的名字>/S_NN_260914.R
-git commit -m "作业 NN：<你的名字>"
-git push fork hwNN-<你的名字>
-gh pr create --repo shujuecn/260914-R-Learning --base main \
-  --head <你的用户名>:hwNN-<你的名字> --title "作业 NN：<你的名字>"
-```
-
-结论：两种都能交上作业，按本指南先 clone Fork 更省事。
-
 ## 提交检查清单
 
 - [ ] 文件路径为 `homework/solutions/<你的名字>/S_NN_260914.R`

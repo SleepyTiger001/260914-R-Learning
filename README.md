@@ -51,4 +51,4 @@ homework/
 
 ## 五、作业怎么交
 
-见 [`homework/HOWTO_SUBMIT.md`](homework/HOWTO_SUBMIT.md)：克隆仓库 → 写答案 → Fork → 关联上游 → 推送 → 提交 Pull Request。
+见 [`homework/HOWTO_SUBMIT.md`](homework/HOWTO_SUBMIT.md)：Fork 本仓库 → 克隆你的 Fork → 关联上游 → 写答案 → 推送 → 提交 Pull Request。
