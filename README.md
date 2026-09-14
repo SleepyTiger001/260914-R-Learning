@@ -5,29 +5,39 @@
 ## 一、怎么用
 
 1. 用 RStudio 打开项目文件 `260914-R-Learning.Rproj`，工作目录会自动锁定在项目根目录。
-2. 打开 `scripts/01_R_base_tidyverse_basics.R`，把光标停在某一行按 `Cmd + Enter` 执行该行；选中若干行可一次执行所选代码。
+2. 打开 `scripts/01_base_tidyverse/01_R_base_tidyverse_basics.R`，把光标停在某一行按 `Cmd + Enter` 执行该行；选中若干行可一次执行所选代码。
 3. 从上往下顺序执行即可，不要跳段（后文会用到前文的对象）。
 
 命令行整体跑一遍（用于验证环境，约 4 秒）：
 
 ```bash
 cd "/Users/cuinuan/Documents/ProgramFiles/R-Source/Programs/R-Learning-Proj/260914-桃园三结义R语言基础训练"
-Rscript scripts/01_R_base_tidyverse_basics.R
+Rscript scripts/01_base_tidyverse/01_R_base_tidyverse_basics.R
 ```
 
 ## 二、目录结构
 
+三个工作目录（`scripts/`、`data/`、`outputs/`）一律按 **「课次_主题」编号子文件夹** 组织，同一课的三处内容编号与主题名保持一致，后续课程依次追加 `02_XXX`、`03_XXX`。
+
 ```
-260914-R-Learning.Rproj          # RStudio 项目文件：双击打开，工作目录即项目根目录
-scripts/NN_主题.R                # 所有课程脚本，按序号命名（后续新课依次追加）
-README.md                        # 课程说明与踩坑记录
-.gitignore                       # 版本控制排除规则
-data/                            # 随仓库分发（脚本运行时会覆盖重写）
-outputs/01_tables/               # 运行后生成，默认不入库
-outputs/02_figures/              # 运行后生成，默认不入库
+260914-R-Learning.Rproj                                  # 项目文件：双击打开，工作目录即项目根目录
+README.md                                                # 课程说明与踩坑记录
+.gitignore                                               # 版本控制排除规则
+scripts/
+  01_base_tidyverse/
+    01_R_base_tidyverse_basics.R                         # 第 1 课脚本，逐行执行
+data/
+  01_base_tidyverse/                                     # 第 1 课数据，随仓库提交
+    herbs.csv  iris_base.csv  iris_readr.csv  iris.xlsx  iris.rds
+outputs/
+  01_base_tidyverse/                                     # 第 1 课产出，运行后生成，默认不入库
+    tables/    herbs_filtered.csv/.xlsx  result.csv/.rds
+    figures/   qi_max_dose.png  dose_vs_papers.png
 ```
 
-脚本内一律使用**相对路径**（`data/...`、`outputs/...`），因此工作目录必须是项目根目录 —— 用 `.Rproj` 打开即可满足，别单独打开 `scripts/` 下的文件。
+新增一课时，只需同步创建 `scripts/NN_主题/`、`data/NN_主题/`、`outputs/NN_主题/{tables,figures}/` 三处，编号与主题名对齐即可。
+
+脚本内一律使用**相对路径**（`data/01_base_tidyverse/...`、`outputs/01_base_tidyverse/...`），因此工作目录必须是项目根目录 —— 用 `.Rproj` 打开即可满足，别单独打开 `scripts/` 下的文件。
 
 ## 三、运行环境
 
@@ -61,25 +71,26 @@ outputs/02_figures/              # 运行后生成，默认不入库
 
 ## 五、数据与产出文件
 
-`data/` 随仓库提交，克隆后即可直接使用（脚本运行时会被覆盖重写，属正常现象）。
+`data/01_base_tidyverse/` 随仓库提交，克隆后即可直接使用（脚本运行时会被覆盖重写，属正常现象）。
 `outputs/` 默认不入库，跑一遍脚本即全部重建；如需把运行结果也发布，删掉 `.gitignore` 中 `outputs/` 一行即可。
 
 > 每次运行脚本都会重写 `data/` 下的文件；其中 `iris.xlsx`、`iris.rds` 是二进制格式，即使内容相同字节也可能变化。
 > 跑完脚本想保持仓库干净，执行 `git checkout -- data/` 把工作区恢复成已提交的版本即可。
 
 ```
-data/                            # 随仓库分发
-  iris_base.csv                  # Base write.csv 产出（已去掉行名）
-  iris_readr.csv                 # readr::write_csv 产出
-  iris.xlsx                      # rio::export 产出
-  iris.rds                       # R 原生格式，类型保留最完整
-  herbs.csv                      # 中药示例数据（8 味药 7 个字段）
-outputs/01_tables/               # 默认不入库，运行脚本后生成
-  herbs_filtered.csv / .xlsx     # 综合案例结果（两种格式）
-  result.csv / result.rds        # 练习 8 的答案产出
-outputs/02_figures/
-  qi_max_dose.png                # 四气 × 用量上限柱状图
-  dose_vs_papers.png             # 用量 × 文献数散点图
+data/01_base_tidyverse/                  # 随仓库分发
+  iris_base.csv                          # Base write.csv 产出（已去掉行名）
+  iris_readr.csv                         # readr::write_csv 产出
+  iris.xlsx                              # rio::export 产出
+  iris.rds                               # R 原生格式，类型保留最完整
+  herbs.csv                              # 中药示例数据（8 味药 7 个字段）
+outputs/01_base_tidyverse/               # 默认不入库，运行脚本后生成
+  tables/
+    herbs_filtered.csv / .xlsx           # 综合案例结果（两种格式）
+    result.csv / result.rds              # 练习 8 的答案产出
+  figures/
+    qi_max_dose.png                      # 四气 × 用量上限柱状图
+    dose_vs_papers.png                   # 用量 × 文献数散点图
 ```
 
 ## 六、示例数据说明

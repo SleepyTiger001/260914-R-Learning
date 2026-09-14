@@ -3,7 +3,7 @@
 # -----------------------------------------------------------------------------
 #  环境：R 4.5.2 / tidyverse 2.x / rio     编写：2026-09-14
 #  用法：用 RStudio 打开项目文件 260914-R-Learning.Rproj，再打开本文件；
-#        光标停在某一行按 Cmd + Enter 执行该行（本文件位于 scripts/ 目录）；
+#        光标停在某一行按 Cmd + Enter 执行该行（本课目录：scripts/01_base_tidyverse/）；
 #        或选中若干行后 Cmd + Enter 执行所选代码。自上而下顺序执行。
 #  约定：代码右侧或上方的 # 注释即为该行的讲解；所有行可以独立执行。
 #  目录：00 环境  01 对象与类型  02 向量与索引  03 四种容器  04 Base 数据框
@@ -246,22 +246,23 @@ c(4, 9, 16) %>% mean() %>% sqrt()    # magrittr 的 %>%：旧写法，由 librar
 
 # ---- 07 数据的读写：Base / readr / rio ----------------------------------------
 
-fs::dir_create(c("data", "outputs/01_tables", "outputs/02_figures"))   # fs 建目录；已存在则跳过，不会报错
+# 项目约定：data/ 与 outputs/ 下按「课次_主题」建子文件夹，本课是 01_base_tidyverse（第二课即 02_XXX）
+fs::dir_create(c("data/01_base_tidyverse", "outputs/01_base_tidyverse/tables", "outputs/01_base_tidyverse/figures"))   # fs 建目录；已存在则跳过，不会报错
 getwd()                              # 确认工作目录必须停在项目根目录（用 .Rproj 打开即自动满足）；不对就 setwd("项目绝对路径")
 
-write.csv(iris, "data/iris_base.csv", row.names = FALSE)   # Base R 写 CSV；row.names = FALSE 去掉行号列（否则读回来多一列 X）
-read.csv("data/iris_base.csv") |> head(3)   # Base R 读 CSV；R 4.x 默认 stringsAsFactors = FALSE，不再乱转因子
+write.csv(iris, "data/01_base_tidyverse/iris_base.csv", row.names = FALSE)   # Base R 写 CSV；row.names = FALSE 去掉行号列（否则读回来多一列 X）
+read.csv("data/01_base_tidyverse/iris_base.csv") |> head(3)   # Base R 读 CSV；R 4.x 默认 stringsAsFactors = FALSE，不再乱转因子
 
-write_csv(iris, "data/iris_readr.csv")      # readr 写：UTF-8 编码、默认不写行名、大文件明显更快
-read_csv("data/iris_readr.csv")             # readr 读：会打印"列类型推断"结果，这个提示要养成看的习惯
-read_csv("data/iris_readr.csv",             # 显式指定列类型：数据大时既能提速、又能避免类型误判
+write_csv(iris, "data/01_base_tidyverse/iris_readr.csv")      # readr 写：UTF-8 编码、默认不写行名、大文件明显更快
+read_csv("data/01_base_tidyverse/iris_readr.csv")             # readr 读：会打印"列类型推断"结果，这个提示要养成看的习惯
+read_csv("data/01_base_tidyverse/iris_readr.csv",             # 显式指定列类型：数据大时既能提速、又能避免类型误判
          col_types = cols(Sepal.Length = col_double(),
                           Species = col_character()))
 readxl::read_excel  # 只是一个函数名，提醒你：读 Excel 还有 readxl::read_excel() 这条路（先 library(readxl)）
-export(iris, "data/iris.xlsx")              # rio 一句话导出 Excel，后端自动选择（本机已装 openxlsx）
-import("data/iris.xlsx") |> head(3)         # rio 一句话读回，格式靠文件扩展名自动识别
-export(iris, "data/iris.rds")               # rds 是 R 原生单对象格式：读写最快、类型保留最完整，中间结果首选
-readRDS("data/iris.rds") |> head(3)         # Base R 读 rds，比 rio::import 更直接
+export(iris, "data/01_base_tidyverse/iris.xlsx")              # rio 一句话导出 Excel，后端自动选择（本机已装 openxlsx）
+import("data/01_base_tidyverse/iris.xlsx") |> head(3)         # rio 一句话读回，格式靠文件扩展名自动识别
+export(iris, "data/01_base_tidyverse/iris.rds")               # rds 是 R 原生单对象格式：读写最快、类型保留最完整，中间结果首选
+readRDS("data/01_base_tidyverse/iris.rds") |> head(3)         # Base R 读 rds，比 rio::import 更直接
 # 选型建议：中间结果用 rds，交付/给同事用 csv 或 xlsx，跨软件交换用 csv
 
 
@@ -278,7 +279,7 @@ herbs <- tibble(                     # 构造一个 8 味中药的小数据集�
 )
 print(herbs)                         # 查看数据
 glimpse(herbs)                       # 横着看：每列类型 + 取值示例，比 str() 更适合数据框
-write_csv(herbs, "data/herbs.csv")   # 顺手存一份，方便你课后再读回来练习
+write_csv(herbs, "data/01_base_tidyverse/herbs.csv")   # 顺手存一份，方便你课后再读回来练习
 
 herbs |> filter(qi == "温")                    # filter() 筛"行"：写法与 Base R 逻辑索引一致
 herbs |> filter(qi == "温", max_dose >= 10)    # 多个条件用逗号连接 = "且"，比写 & 更易读
@@ -387,7 +388,7 @@ p <- ggplot(herbs, aes(x = qi, y = max_dose, fill = qi)) +   # ggplot 三层结�
        title = "中药四气与用量上限") +
   theme_cn                                                   # 叠加刚定义的中文主题
 if (interactive()) print(p)          # 交互式（RStudio）下在 Plot 面板显示；命令行批处理跳过 —— pdf 设备不支持中文字体
-ggsave("outputs/02_figures/qi_max_dose.png", p, width = 7, height = 4, dpi = 300)   # 存图：单位英寸，dpi 300 够印刷
+ggsave("outputs/01_base_tidyverse/figures/qi_max_dose.png", p, width = 7, height = 4, dpi = 300)   # 存图：单位英寸，dpi 300 够印刷
 # 结论：出图统一用 ggsave 落成 PNG（走 png 设备，中文没问题），屏幕显示才用 print(p)
 
 p2 <- ggplot(herbs, aes(x = max_dose, y = papers, label = herb)) +   # 散点图：看"用药剂量"与"研究热度"的关系
@@ -395,7 +396,7 @@ p2 <- ggplot(herbs, aes(x = max_dose, y = papers, label = herb)) +   # 散点图
   geom_text(nudge_y = 800, size = 3) +                          # 点上方标药名，nudge_y 上移避免压住点
   labs(x = "用量上限 (g)", y = "文献数", title = "用量与文献数分布") + theme_cn
 if (interactive()) print(p2)         # 交互式下显示
-ggsave("outputs/02_figures/dose_vs_papers.png", p2, width = 7, height = 4, dpi = 300)   # 一并存盘
+ggsave("outputs/01_base_tidyverse/figures/dose_vs_papers.png", p2, width = 7, height = 4, dpi = 300)   # 一并存盘
 
 p3 <- ggplot(qi_long, aes(x = qi, y = value, fill = metric)) +        # 长表 + fill = 指标名 → 自动生成并列柱
   geom_col(position = "dodge") + labs(x = "四气", y = "数值", fill = "指标") + theme_cn
@@ -412,8 +413,8 @@ result <- herbs |>                              # 从原始小表出发
   arrange(dose_rank)                             # 第 5 步：按排名排序
 print(result)                                    # 查看结果：黄芪的 nature 为空，是"微温"在参考表里没有对应行，不是代码 bug
 stopifnot(nrow(result) > 0)                      # 健全性检查：结果为空说明筛选条件有误，立刻报错而不是白跑后面
-export(result, "outputs/01_tables/herbs_filtered.csv")    # rio::export 一句话导出，格式由扩展名决定
-export(result, "outputs/01_tables/herbs_filtered.xlsx")   # 同一份结果同时出 Excel，交付给同事更方便
+export(result, "outputs/01_base_tidyverse/tables/herbs_filtered.csv")    # rio::export 一句话导出，格式由扩展名决定
+export(result, "outputs/01_base_tidyverse/tables/herbs_filtered.xlsx")   # 同一份结果同时出 Excel，交付给同事更方便
 
 result |>                                        # 对结果再做一次汇总，验证口径
   count(nature, sort = TRUE) |>                  # 统计阴阳归属分布
@@ -432,7 +433,7 @@ result |>                                        # 对结果再做一次汇总�
 # 练习 5：把 iris 的第 1、3、5 列取出来，按 Petal.Length 降序，取前 5 行。
 # 练习 6：计算 iris 中每种花的平均花瓣长度，并转成长表（指标名一列、数值一列）。
 # 练习 7：把 3 个向量的平均值写成函数 mean3(x)：内部用 stopifnot 断言 x 是数值向量，否则报错。
-# 练习 8：把 result 表导出成 rds 与 csv 两种格式，放到 outputs/01_tables/ 下。
+# 练习 8：把 result 表导出成 rds 与 csv 两种格式，放到 outputs/01_base_tidyverse/tables/ 下。
 
 # ---------- 参考答案（先自己写，卡住了再看）----------
 
@@ -461,8 +462,8 @@ mean3(c(1, 2, 3))          # 正常 → 2
 try(mean3("a"))            # 被断言拦下，报错但不中断
 
 # 答 8
-export(result, "outputs/01_tables/result.rds")
-export(result, "outputs/01_tables/result.csv")
+export(result, "outputs/01_base_tidyverse/tables/result.rds")
+export(result, "outputs/01_base_tidyverse/tables/result.csv")
 
 
 # =============================================================================

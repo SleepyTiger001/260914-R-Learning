@@ -16,8 +16,8 @@ Rplots.pdf             # 命令行画图的默认输出，每次运行都重新�
 *.RData
 
 # ---- 脚本运行产生的可再生产物 -----------------------------------
-# data/ 随仓库分发：含示例数据 herbs.csv（8 味中药）与读写演示产物，单文件均 < 30 KB
-# outputs/ 默认不入库，跑一次 01_R_base_tidyverse_basics.R 即可全部重建；
+# data/ 随仓库分发：按「课次_主题」建子目录（如 data/01_base_tidyverse/），单文件均 < 30 KB
+# outputs/ 默认不入库，跑一次 scripts/NN_主题/ 下的脚本即可全部重建；
 #          若希望把运行结果也发布出去，删掉下面一行即可（CSV/PNG 体积都很小）
 outputs/
 
