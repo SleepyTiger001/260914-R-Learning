@@ -33,9 +33,14 @@ outputs/
   01_base_tidyverse/                                     # 第 1 课产出，运行后生成，默认不入库
     tables/    herbs_filtered.csv/.xlsx  result.csv/.rds
     figures/   qi_max_dose.png  dose_vs_papers.png
+homework/
+  questions/Q_NN_260914.R                                # 作业题目（NN 为作业序号）
+  answers/A_NN_260914.R                                  # 对应参考答案，交卷前不要打开
+  solutions/<学生名>/                                     # 学生提交目录，本地保留、不入库
 ```
 
 新增一课时，只需同步创建 `scripts/NN_主题/`、`data/NN_主题/`、`outputs/NN_主题/{tables,figures}/` 三处，编号与主题名对齐即可。
+作业则按 `Q_NN_260914.R` / `A_NN_260914.R` 成对编号，题目与答案分别放在 `homework/questions/` 与 `homework/answers/` 下。
 
 脚本内一律使用**相对路径**（`data/01_base_tidyverse/...`、`outputs/01_base_tidyverse/...`），因此工作目录必须是项目根目录 —— 用 `.Rproj` 打开即可满足，别单独打开 `scripts/` 下的文件。
 
