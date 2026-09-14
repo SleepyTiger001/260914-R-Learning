@@ -45,19 +45,19 @@ Rscript 01_R_base_tidyverse_basics.R
 | 12 | 综合案例：一条完整分析流水线 | 8 分钟 |
 | 13 | 课堂练习 8 题（含参考答案） | 课后 |
 
-## 四、脚本产出的文件
+## 四、数据与产出文件
 
-> 以下文件由脚本运行时生成，**默认不纳入版本控制**（见 `.gitignore`），克隆仓库后跑一遍脚本即全部重建。
-> 如需把运行结果一并发布，删掉 `.gitignore` 中 `data/` 与 `outputs/` 两行即可。
+`data/` 随仓库提交，克隆后即可直接使用（脚本运行时会被覆盖重写，属正常现象）。
+`outputs/` 默认不入库，跑一遍脚本即全部重建；如需把运行结果也发布，删掉 `.gitignore` 中 `outputs/` 一行即可。
 
 ```
-data/                            # 读写演示的中间文件
+data/                            # 随仓库分发
   iris_base.csv                  # Base write.csv 产出（已去掉行名）
   iris_readr.csv                 # readr::write_csv 产出
   iris.xlsx                      # rio::export 产出
   iris.rds                       # R 原生格式，类型保留最完整
   herbs.csv                      # 中药示例数据（8 味药 7 个字段）
-outputs/01_tables/
+outputs/01_tables/               # 默认不入库，运行脚本后生成
   herbs_filtered.csv / .xlsx     # 综合案例结果（两种格式）
   result.csv / result.rds        # 练习 8 的答案产出
 outputs/02_figures/
