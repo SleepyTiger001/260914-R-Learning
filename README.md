@@ -31,10 +31,13 @@ scripts/01_base_tidyverse/                    # 第 1 课脚本（逐行执行�
 data/01_base_tidyverse/                       # 第 1 课数据（随仓库分发）
 outputs/01_base_tidyverse/{tables,figures}/   # 第 1 课产出（运行后生成，默认不入库）
 homework/
-  questions/Q_NN_260914.R                     # 题目（NN 为作业序号）
-  answers/A_NN_260914.R                       # 参考答案（不对外发布）
-  solutions/<学生名>/S_NN_260914.R             # 学生答案（Fork + Pull Request 提交）
+  questions/Q_NN_<批次>.R                     # 题目（NN 为作业序号，<批次> 为发布日）
+  answers/A_NN_<批次>.R                       # 参考答案（不对外发布）
+  solutions/<你的名字>/S_NN_<批次>.R           # 学生答案（Fork + Pull Request 提交）
+  outputs/<你的名字>/                          # 作业产物（随答案一并提交）
 ```
+
+作业文件名里的 `<批次>` 取该次作业的发布日：作业 01 为 `260914`、作业 02 为 `260920`，后续依次顺延。
 
 新增一课时，同步创建 `scripts/NN_主题/`、`data/NN_主题/`、`outputs/NN_主题/{tables,figures}/` 三处即可。
 脚本内使用**相对路径**，因此工作目录必须是项目根目录 —— 用 `.Rproj` 打开即可满足，不要单独打开 `scripts/` 下的文件。

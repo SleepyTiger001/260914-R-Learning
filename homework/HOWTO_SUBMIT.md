@@ -9,11 +9,13 @@
 | 1 | Fork 本仓库，得到你自己的副本                           | GitHub 网页 |
 | 2 | 克隆你的 Fork 到本地                                    | 终端        |
 | 3 | 关联上游（老师）仓库，方便后续同步                      | 终端        |
-| 4 | 写答案到`homework/solutions/<你的名字>/S_NN_260914.R` | 本地编辑器  |
+| 4 | 写答案到`homework/solutions/<你的名字>/S_NN_<批次>.R` | 本地编辑器  |
 | 5 | 提交并推送到你的 Fork                                   | 终端        |
 | 6 | 从你的分支向老师仓库发起 Pull Request                   | GitHub 网页 |
 
-约定：`NN` 为作业序号（如 `01`），`260914` 为发布批次。学生文件一律命名为 `S_NN_260914.R`，放在自己名字的目录下。
+约定：`NN` 为作业序号（如 `01`），`<批次>` 为该次作业的发布日（作业 01 是 `260914`，作业 02 是 `260920`）。学生文件一律命名为 `S_NN_<批次>.R`，放在自己名字的目录下。
+
+产物目录同构：脚本导出的表格等产物一律存到 `homework/outputs/<你的名字>/`（名字与 `homework/solutions/` 一致，目录由脚本开头那句 `fs::dir_create()` 自动建好）；提交时与答案一并推送，老师可直接在 PR 里看到结果文件。
 
 ---
 
@@ -53,10 +55,10 @@ git merge upstream/main    # 把最新题目合并进本地 main
 
 ## 4. 写答案
 
-1. 打开 `homework/questions/Q_NN_260914.R` 读题目。
-2. 新建目录与文件：`homework/solutions/<你的名字>/S_NN_260914.R`。
-3. 逐行实现题目要求，并写中文注释。
-4. 提交前自查：文件名是否符合 `S_NN_260914.R`，是否留下真实姓名、学号、邮箱、电话等隐私信息（题目里不要写）。
+1. 打开 `homework/questions/Q_NN_<批次>.R` 读题目。
+2. 新建目录与文件：`homework/solutions/<你的名字>/S_NN_<批次>.R`。
+3. 逐行实现题目要求，并写中文注释；产物目录按题目要求建（`homework/outputs/<你的名字>/`）。
+4. 提交前自查：文件名是否符合 `S_NN_<批次>.R`，是否留下真实姓名、学号、邮箱、电话等隐私信息（题目里不要写）。
 
 开发时先切一个分支，便于反复修改：
 
@@ -67,7 +69,7 @@ git checkout -b hwNN-<你的名字>      # 例：hw01-张三
 ## 5. 提交并推送到你的 Fork
 
 ```bash
-git add homework/solutions/<你的名字>/S_NN_260914.R
+git add homework/solutions/<你的名字>/ homework/outputs/<你的名字>/
 git commit -m "作业 NN：<你的名字>"
 git push -u origin hwNN-<你的名字>
 ```
@@ -95,7 +97,7 @@ gh pr create \
 
 ## 提交检查清单
 
-- [ ] 文件路径为 `homework/solutions/<你的名字>/S_NN_260914.R`
+- [ ] 文件路径为 `homework/solutions/<你的名字>/S_NN_<批次>.R`
 - [ ] 每行代码可独立运行，含中文注释
 - [ ] 未夹带真实姓名、学号、邮箱、电话等隐私信息
 - [ ] `git remote -v` 中 `origin` 是自己的 Fork，`upstream` 是老师仓库
