@@ -18,8 +18,8 @@ R.version.string # 完整版本信息字符串，报错求助时先把这个贴�
 search() # 查看当前"搜索路径"：哪些包已加载、哪些对象可用
 
 # 以下两行仅首次运行需要，装过就跳过；本机已预装，无需执行
-install.packages("tidyverse") # 安装 tidyverse 全家桶（下载较慢，约 5-10 分钟）
-install.packages("rio") # 安装 rio：万能读写包，一句话读/写 30 多种格式
+# install.packages("tidyverse") # 安装 tidyverse 全家桶（下载较慢，约 5-10 分钟）
+# install.packages("rio") # 安装 rio：万能读写包，一句话读/写 30 多种格式
 
 
 library(tidyverse) # 一次性加载 8 个核心包：ggplot2 dplyr tidyr readr purrr tibble stringr forcats
@@ -194,6 +194,11 @@ ncol(tb) # 列名、行数、列数：两种数据框通用
 
 # ---- 04 Base R 数据框操作：$、[ ]、筛选、排序、分组 ----------------------------
 
+# R内置了iris数据集
+# 可以读取本地数据覆盖它
+iris <- import("data/01_base_tidyverse/iris.xlsx")
+iris
+
 head(iris) # iris：R 自带鸢尾花数据集，150 行 5 列，本课全程用来练手
 tail(iris, 3) # 后 3 行
 dim(iris)
@@ -203,25 +208,34 @@ names(iris)
 colnames(iris) # 列名（对数据框而言两者等价）
 str(iris) # 每列类型 + 前几个取值：拿到新数据第一件事就该看它
 summary(iris) # 每列描述统计：数值列给分位数，因子列给频数
-if (interactive()) {
-  View(iris)
-} # 打开表格式查看器：RStudio 里很好用，命令行环境自动跳过（interactive() 判断运行方式）
+View(iris)
 
 iris$Species # $ 取一列 → 因子向量
 iris[["Sepal.Length"]] # [[ ]] 取一列 → 数值向量
 iris[, "Species"] # [行, 列] 取列，等价于 iris$Species
 iris[1:5, c("Sepal.Length", "Species")] # 取前 5 行的两列，列名用 c() 组合
 iris[1:5, ] # 行有筛选、列留空 = 全部列（逗号不要漏）
-iris[iris$Species == "setosa", ] # 逻辑筛行：只留 setosa（漏掉末尾逗号就变成"筛列"，会报错）
-iris[iris$Sepal.Length > 7 & iris$Species == "virginica", ] # & 是"且"，| 是"或"，条件用小括号分组更清楚
-subset(iris, Species == "setosa", select = c(Sepal.Length, Species)) # subset() 一次完成"筛行 + 选列"
-iris[order(iris$Sepal.Length, decreasing = TRUE), ][1:3, ] # order() 返回排序后的行下标；取最长花萼的前 3 行
+
 table(iris$Species) # 分类变量频数统计：Base R 最常用的汇总手段
 prop.table(table(iris$Species)) # 频数转比例，三种花各占 1/3
-with(iris, tapply(Sepal.Length, Species, mean)) # with() + tapply()：分组求均值（对应后面 dplyr 的 group_by）
-aggregate(Sepal.Length ~ Species, data = iris, FUN = mean) # 公式写法做分组汇总，~ 读作"依"
+# with(iris, tapply(Sepal.Length, Species, mean)) # with() + tapply()：分组求均值（对应后面 dplyr 的 group_by）
+# aggregate(Sepal.Length ~ Species, data = iris, FUN = mean) # 公式写法做分组汇总，~ 读作"依"
+
 cor(iris$Sepal.Length, iris$Petal.Length) # 相关系数 → 0.87，强正相关
-is.na(iris) |> sum() # 检查整个数据框有没有缺失值 → 0（干净数据）
+cor(iris$Sepal.Length, iris$Petal.Length, method = "spearman")
+
+iris |> is.na() |> sum() # 检查整个数据框有没有缺失值 → 0（干净数据）
+sum(is.na(iris))
+
+
+# 演示
+# iris_data <- import("data/01_base_tidyverse/iris.xlsx")
+# iris_data_sel <- iris_data[, c("Sepal.Length", "Species")]
+# iris_summ = summary(iris_data_sel)
+
+# import("data/01_base_tidyverse/iris.xlsx") |>
+  # iris_data[, c("Sepal.Length", "Species")] |>  # base R 切片不适配管道函数传参语法，需要用Tidyverse
+  # summary()
 
 
 # ---- 05 函数、条件与循环（含 apply / map 家族）---------------------------------
@@ -277,17 +291,20 @@ vapply(iris[, 1:4], mean, numeric(1)) # vapply：需指定返回类型，最安�
 apply(iris[, 1:4], 2, mean) # apply 用于矩阵/数组：参数 2 表示"按列"（1 表示按行）
 mapply(function(a, b) a + b, 1:3, 4:6) # mapply：多参数"逐元素"配对运算
 tapply(iris$Sepal.Length, iris$Species, mean) # tapply：按分组因子做"分组 apply"
+
 map_dbl(iris[, 1:4], mean) # purrr::map_dbl：tidyverse 版 lapply，且强制返回 double
 map(1:3, ~ .x^2) # 公式写法：~ 里的 .x 指当前元素，省去写匿名函数
 
 
 # ---- 06 管道：让多步操作读起来像一句话 -----------------------------------------
 
+1:5 |> mean()
+
 sqrt(mean(c(4, 9, 16))) # 嵌套写法：由内向外读（3 层以上就很难读懂）
 c(4, 9, 16) |> mean() |> sqrt() # 原生管道 |>（R 4.1+）：左边结果自动成为右边函数的第一个参数
 c(4, 9, 16) |> mean() |> sqrt() |> round(2) # 管道可无限追加步骤，读起来是"先求均值→再开方→再保留两位"
 iris |> head(3) # 管道同样适用于数据框
-iris |> subset(Species == "setosa") |> nrow() # 先筛后数：一行读完全流程
+iris |> subset(Species == "setosa") |> nrow() # 行筛选  先筛后数：一行读完全流程
 c(4, 9, 16) %>% mean() %>% sqrt() # magrittr 的 %>%：旧写法，由 library(tidyverse) 带入，功能与 |> 基本一致
 # 三条书写规则（新手最常踩）：
 # 1) 管道右侧的括号不能省 —— c(1, 2) |> sum 会报错，必须写 sum()，因为管道传的是"函数调用"
@@ -298,14 +315,15 @@ c(4, 9, 16) %>% mean() %>% sqrt() # magrittr 的 %>%：旧写法，由 library(t
 
 # 项目约定：data/ 与 outputs/ 下按「课次_主题」建子文件夹，本课是 01_base_tidyverse（第二课即 02_XXX）
 fs::dir_create(c(
-  "data/01_base_tidyverse",
-  "outputs/01_base_tidyverse/tables",
-  "outputs/01_base_tidyverse/figures"
+  # "data/01_base_tidyverse",
+  # "outputs/01_base_tidyverse/tables",
+  # "outputs/01_base_tidyverse/figures",
+  "outputs_2"
 )) # fs 建目录；已存在则跳过，不会报错
 getwd() # 确认工作目录必须停在项目根目录（用 .Rproj 打开即自动满足）；不对就 setwd("项目绝对路径")
 
 write.csv(iris, "data/01_base_tidyverse/iris_base.csv", row.names = FALSE) # Base R 写 CSV；row.names = FALSE 去掉行号列（否则读回来多一列 X）
-read.csv("data/01_base_tidyverse/iris_base.csv") |> head(3) # Base R 读 CSV；R 4.x 默认 stringsAsFactors = FALSE，不再乱转因子
+a_data = read.csv("data/01_base_tidyverse/iris.csv") # Base R 读 CSV；R 4.x 默认 stringsAsFactors = FALSE，不再乱转因子
 
 write_csv(iris, "data/01_base_tidyverse/iris_readr.csv") # readr 写：UTF-8 编码、默认不写行名、大文件明显更快
 read_csv("data/01_base_tidyverse/iris_readr.csv") # readr 读：会打印"列类型推断"结果，这个提示要养成看的习惯
@@ -314,7 +332,9 @@ read_csv(
   col_types = cols(Sepal.Length = col_double(), Species = col_character())
 )
 readxl::read_excel # 只是一个函数名，提醒你：读 Excel 还有 readxl::read_excel() 这条路（先 library(readxl)）
-export(iris, "data/01_base_tidyverse/iris.xlsx") # rio 一句话导出 Excel，后端自动选择（本机已装 openxlsx）
+
+export(iris, "data/01_base_tidyverse/iris_2.txt") # rio 一句话导出 Excel，后端自动选择（本机已装 openxlsx）
+
 import("data/01_base_tidyverse/iris.xlsx") |> head(3) # rio 一句话读回，格式靠文件扩展名自动识别
 export(iris, "data/01_base_tidyverse/iris.rds") # rds 是 R 原生单对象格式：读写最快、类型保留最完整，中间结果首选
 readRDS("data/01_base_tidyverse/iris.rds") |> head(3) # Base R 读 rds，比 rio::import 更直接
