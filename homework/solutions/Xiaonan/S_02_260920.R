@@ -27,7 +27,7 @@ mff <- import("data/01_base_tidyverse/MFF-TDF.xlsx", which = "selected_600")
 
 #题4
 mff_top <- mff |>
-  select(-contains("血压")) |>           
+  select(-contains("压")) |>           
   mutate(bmi = 体重 / (身高 / 100)^2) |>  
   filter(bmi > mean(bmi)) 
 export(mff_top, "homework/outputs/Xiaonan/mff_02_top_bmi.csv")
