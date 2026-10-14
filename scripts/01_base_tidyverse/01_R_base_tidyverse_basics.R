@@ -315,15 +315,15 @@ c(4, 9, 16) %>% mean() %>% sqrt() # magrittr 的 %>%：旧写法，由 library(t
 
 # 项目约定：data/ 与 outputs/ 下按「课次_主题」建子文件夹，本课是 01_base_tidyverse（第二课即 02_XXX）
 fs::dir_create(c(
-  # "data/01_base_tidyverse",
-  # "outputs/01_base_tidyverse/tables",
-  # "outputs/01_base_tidyverse/figures",
-  "outputs_2"
+  "data/01_base_tidyverse",
+  "outputs/01_base_tidyverse/tables",
+  "outputs/01_base_tidyverse/figures",
+  # "outputs_2"
 )) # fs 建目录；已存在则跳过，不会报错
 getwd() # 确认工作目录必须停在项目根目录（用 .Rproj 打开即自动满足）；不对就 setwd("项目绝对路径")
 
 write.csv(iris, "data/01_base_tidyverse/iris_base.csv", row.names = FALSE) # Base R 写 CSV；row.names = FALSE 去掉行号列（否则读回来多一列 X）
-a_data = read.csv("data/01_base_tidyverse/iris.csv") # Base R 读 CSV；R 4.x 默认 stringsAsFactors = FALSE，不再乱转因子
+# a_data = read.csv("data/01_base_tidyverse/iris.csv") # Base R 读 CSV；R 4.x 默认 stringsAsFactors = FALSE，不再乱转因子
 
 write_csv(iris, "data/01_base_tidyverse/iris_readr.csv") # readr 写：UTF-8 编码、默认不写行名、大文件明显更快
 read_csv("data/01_base_tidyverse/iris_readr.csv") # readr 读：会打印"列类型推断"结果，这个提示要养成看的习惯
@@ -333,7 +333,7 @@ read_csv(
 )
 readxl::read_excel # 只是一个函数名，提醒你：读 Excel 还有 readxl::read_excel() 这条路（先 library(readxl)）
 
-export(iris, "data/01_base_tidyverse/iris_2.txt") # rio 一句话导出 Excel，后端自动选择（本机已装 openxlsx）
+# export(iris, "data/01_base_tidyverse/iris_2.txt") # rio 一句话导出 Excel，后端自动选择（本机已装 openxlsx）
 
 import("data/01_base_tidyverse/iris.xlsx") |> head(3) # rio 一句话读回，格式靠文件扩展名自动识别
 export(iris, "data/01_base_tidyverse/iris.rds") # rds 是 R 原生单对象格式：读写最快、类型保留最完整，中间结果首选
@@ -357,7 +357,7 @@ herbs <- tibble(
     "心肝胃",
     "心肺膀胱"
   ), # 归经
-  toxic = c(FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE), # 是否有毒
+  toxic = c(FALSE, FALSE, FALSE, FALSE, TRUE, FALSE, FALSE, TRUE), # 是否有毒
   max_dose = c(9, 30, 12, 15, 10, 15, 5, 10), # 药典用量上限（克）
   papers = c(15200, 9800, 12400, 3600, 21000, 5400, 8800, 4200) # 相关文献数
 )
@@ -368,6 +368,7 @@ write_csv(herbs, "data/01_base_tidyverse/herbs.csv") # 顺手存一份，方便�
 herbs |> filter(qi == "温") # filter() 筛"行"：写法与 Base R 逻辑索引一致
 herbs |> filter(qi == "温", max_dose >= 10) # 多个条件用逗号连接 = "且"，比写 & 更易读
 herbs |> filter(qi %in% c("温", "寒")) # %in% 表示"多选一"，等价于 qi == "温" | qi == "寒"
+herbs |> filter(qi == "温" | qi == "寒")
 herbs |> filter(!toxic) # ! 取反：筛选无毒的药（逻辑列本身就是条件，可省 == TRUE）
 herbs |> filter(str_detect(meridian, "脾")) # 配合 stringr 做"包含"筛选：归经中含"脾"字
 
@@ -375,13 +376,14 @@ herbs |> select(herb, qi, max_dose) # select() 选"列"：按列名保留
 herbs |> select(-toxic, -papers) # 负号表示"排除"这两列
 herbs |> select(where(is.numeric)) # where() 按类型选列：只保留数值列
 herbs |> select(starts_with("m")) # 按名字前缀选列 → max_dose、meridian
-herbs |> select(herb, everything()) # everything() 表示"其余所有列"，常用来把关键列提到最前
-herbs |> relocate(papers, .before = herb) # relocate() 调整列顺序：把 papers 移到 herb 前面
-rename(herbs, dose_max = max_dose) # rename() 改列名：新名 = 旧名（顺序与新名相反，注意别写反）
+herbs |> select(meridian, qi, everything()) # everything() 表示"其余所有列"，常用来把关键列提到最前
+herbs |> relocate(meridian, .before = qi) # relocate() 调整列顺序：把 papers 移到 herb 前面
+herbs |> relocate(meridian, .after = herb) # relocate() 调整列顺序：把 papers 移到 herb 前面
+herbs |> rename(dose_max = max_dose) # rename() 改列名：新名 = 旧名（顺序与新名相反，注意别写反）
 
 herbs |> arrange(max_dose) # arrange() 按列排序，默认升序
 herbs |> arrange(desc(papers)) # desc() 降序：文献最多的排最前
-herbs |> arrange(qi, desc(max_dose)) # 多键排序：先按四气升序，同一四气内按用量降序
+herbs |> arrange(qi, desc(max_dose), toxic) # 多键排序：先按四气升序，同一四气内按用量降序
 
 herbs |> mutate(dose_half = max_dose / 2) # mutate() 新增列：由已有列计算得到
 herbs |> mutate(dose_g = max_dose, dose_mg = max_dose * 1000) # 一次新增多列，用逗号分隔
@@ -397,7 +399,12 @@ herbs |>
     max_paper = max(papers)
   ) # 最大值
 herbs |> pull(herb) # pull() 把一列抽成向量（等价于 $）
+
 herbs |> slice_max(max_dose, n = 3) # slice_max()：取某列最大的前 3 行（等价于排序 + head）
+herbs |> slice_head(n = 3) # slice_max()：取某列最大的前 3 行（等价于排序 + head）
+herbs |> slice_tail(n = 3) # slice_max()：取某列最大的前 3 行（等价于排序 + head）
+herbs |> slice_sample(n = 3) # slice_max()：取某列最大的前 3 行（等价于排序 + head）
+herbs |> slice_min(max_dose, n = 3) # slice_max()：取某列最大的前 3 行（等价于排序 + head）
 
 
 # ---- 09 分组汇总与多表连接 -----------------------------------------------------
