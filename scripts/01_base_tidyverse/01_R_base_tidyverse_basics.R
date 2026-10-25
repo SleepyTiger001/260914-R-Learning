@@ -439,6 +439,7 @@ herbs |>
 
 # ---- 10 长宽转换与文本处理：tidyr / stringr / forcats --------------------------
 
+
 qi_stat <- herbs |>
   group_by(qi) |>
   summarise(papers_mean = mean(papers), dose_mean = mean(max_dose)) # 两个指标
@@ -448,11 +449,23 @@ qi_stat |>
     names_to = "metric",
     values_to = "value"
   ) # 宽 → 长
+
 qi_long <- qi_stat |>
-  pivot_longer(cols = -qi, names_to = "metric", values_to = "value") # cols = -qi：除 qi 外全部转长
-qi_long |> pivot_wider(names_from = metric, values_from = value) # 长 → 宽，还原回 qi_stat
+  pivot_longer(
+    cols = -qi, 
+    names_to = "metric", 
+    values_to = "value"
+) # cols = -qi：除 qi 外全部转长
+
+qi_long |> 
+  pivot_wider(
+    names_from = metric, 
+    values_from = value
+) # 长 → 宽，还原回 qi_stat
+
 # 口诀：一列一个"变量名"是宽表；"指标名"一列、"数值"一列是长表。ggplot 分组绘图、回归建模通常都要长表。
 herbs |> mutate(flavor_vec = str_split(flavor, "")) |> unnest_longer(flavor_vec) # 无分隔符拆单字：str_split 得 list 列，unnest_longer 炸成多行
+
 sep_demo <- tibble(x = c("补气,固脱,生津", "清热,燥湿")) # 造一个"带分隔符的多值字段"场景（中药功效常见）
 sep_demo |> separate_longer_delim(x, delim = ",") # 有分隔符 → 拆成多行（变长）
 sep_demo |>
@@ -464,17 +477,19 @@ sep_demo |>
   ) # 拆成多列（变宽），位数不足填 NA
 
 str_count(herbs$meridian, "脾") # 数"脾"字出现次数：1 表示只归脾经，让模糊的归经字段可计算
-str_detect(herbs$meridian, "^肺") # 判断是否以"肺"开头（^ 表示开头，$ 表示结尾）
-str_replace(herbs$qi, "微", "") # 替换第一个匹配："微温" → "温"，便于统一口径
+str_detect(herbs$meridian, "^脾") # 判断是否以"肺"开头（^ 表示开头，$ 表示结尾）
+str_replace(herbs$qi, "微", "大") # 替换第一个匹配："微温" → "温"，便于统一口径
 str_sub(herbs$herb, 1, 1) # 取子串：第 1 个字符
-str_pad("3", width = 2, pad = "0") # 补零 → "03"，做编号或日期拼接时常用
+str_pad("3", width = 3, pad = "0", side = "both") # 补零 → "03"，做编号或日期拼接时常用
 str_c(herbs$herb, "（", herbs$qi, "）") # 拼接字符串（比 paste0 的向量化行为更可预期）
+
 print(str_glue("{herbs$herb} 用量上限 {herbs$max_dose} 克")) # 模板字符串：{} 里直接写表达式，比反复拼引号清晰
 str_split("补气,固脱", ",")[[1]] # 按分隔符切分，返回 list，故用 [[1]] 取第一个元素
 
 str_trim("  甘草  ") # 去首尾空格（数据清洗必做）
 str_replace_all("温温", "温", "热") # 全部替换："温温" → "热热"（注意 replace 只换第一个）
 str_which(herbs$meridian, "脾") # 返回包含"脾"的位置下标，可直接用于筛选
+
 herbs$qi |> fct_infreq() |> levels() # fct_infreq 按出现频次重排水平
 fct_reorder(herbs$qi, herbs$max_dose) |> levels() # fct_reorder 按"用量上限中位数"给水平排序，绘图时顺序才对
 # 注意：fct_reorder 遇到排序变量含 NA 会丢弃该水平并报长度错 —— 先用 tidyr::drop_na() 或填默认值再排
@@ -499,27 +514,30 @@ p <- ggplot(herbs, aes(x = qi, y = max_dose, fill = qi)) + # ggplot 三层结构
     fill = "四气", # 轴标签与图例标题
     title = "中药四气与用量上限"
   ) +
-  theme_cn # 叠加刚定义的中文主题
-if (interactive()) {
-  print(p)
-} # 交互式（RStudio）下在 Plot 面板显示；命令行批处理跳过 —— pdf 设备不支持中文字体
+  # theme_cn # 叠加刚定义的中文主题
+  # theme_bw()
+  theme_classic()
+
+# if (interactive()) {
+#   print(p)
+# } # 交互式（RStudio）下在 Plot 面板显示；命令行批处理跳过 —— pdf 设备不支持中文字体
 ggsave(
   "outputs/01_base_tidyverse/figures/qi_max_dose.png",
   p,
   width = 7,
-  height = 4,
+  height = 7,
   dpi = 300
 ) # 存图：单位英寸，dpi 300 够印刷
 # 结论：出图统一用 ggsave 落成 PNG（走 png 设备，中文没问题），屏幕显示才用 print(p)
 
 p2 <- ggplot(herbs, aes(x = max_dose, y = papers, label = herb)) + # 散点图：看"用药剂量"与"研究热度"的关系
-  geom_point(size = 3) + # 点
+  geom_point(size = 1) + # 点
   geom_text(nudge_y = 800, size = 3) + # 点上方标药名，nudge_y 上移避免压住点
   labs(x = "用量上限 (g)", y = "文献数", title = "用量与文献数分布") +
   theme_cn
-if (interactive()) {
-  print(p2)
-} # 交互式下显示
+# if (interactive()) {
+  # print(p2)
+# } # 交互式下显示
 ggsave(
   "outputs/01_base_tidyverse/figures/dose_vs_papers.png",
   p2,
@@ -530,11 +548,13 @@ ggsave(
 
 p3 <- ggplot(qi_long, aes(x = qi, y = value, fill = metric)) + # 长表 + fill = 指标名 → 自动生成并列柱
   geom_col(position = "dodge") +
+  scale_y_log10() +
   labs(x = "四气", y = "数值", fill = "指标") +
   theme_cn
-if (interactive()) {
-  print(p3)
-} # 交互式下显示：同一四气下两个指标并排对比
+p3
+# if (interactive()) {
+#   print(p3)
+# } # 交互式下显示：同一四气下两个指标并排对比
 
 
 # ---- 12 综合案例：一条完整的分析流水线 ------------------------------------------
@@ -588,16 +608,16 @@ iris[, c(1, 3, 5)] |> arrange(desc(Petal.Length)) |> head(5)
 # 答 6
 iris |>
   group_by(Species) |>
-  summarise(mean_petal = mean(Petal.Length)) |>
+  summarise(mean_petal = mean(Petal.Length), sd_petal = sd(Petal.Length)) |>
   pivot_longer(cols = -Species, names_to = "metric", values_to = "value")
 
 # 答 7
 mean3 <- function(x) {
-  stopifnot(is.numeric(x))
+  # stopifnot(is.numeric(x))
   mean(x, na.rm = TRUE)
 }
 mean3(c(1, 2, 3)) # 正常 → 2
-try(mean3("a")) # 被断言拦下，报错但不中断
+# try(mean3("a")) # 被断言拦下，报错但不中断
 
 # 答 8
 export(result, "outputs/01_base_tidyverse/tables/result.rds")
