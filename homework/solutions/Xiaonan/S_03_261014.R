@@ -16,7 +16,7 @@ mff |>
   relocate(性别, .before = 脂肪肝三分类) |> 
   arrange(desc(收缩压)) |> 
   slice_head(n = 80) |> 
-  mutate(bmi = 体重 / (身高/100)^2, 1) |> 
+  mutate(bmi = round(体重 / (身高/100)^2, 1)) |> 
   group_by(脂肪肝三分类) |> 
   summarise(
     例数 = n(),
@@ -26,6 +26,7 @@ mff |>
 ungroup() |> 
 arrange(mean_bmi) |> 
 export("homework/outputs/Xiaonan/mff_03_group_first.csv")  
+
   
   
   
